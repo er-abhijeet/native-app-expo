@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image, Pressable, Vibration } from "react-nativ
 import React, { useEffect, useState } from "react";
 
 const Saved = () => {
-  const [intervalId, setIntervalId] = useState(null);
+  const [intervalId, setIntervalId] = useState(0);
   const [counter, setCounter] = useState(1);
   const [show, setShow] = useState("hellow");
   const [imageUrl, setImageUrl] = useState("hellow");
@@ -10,7 +10,7 @@ const Saved = () => {
   const handleVibrate = () => {
     // Vibrate immediately
     // Vibration.vibrate(1000);
-    if(intervalId!=null)return;
+    if(intervalId)return;
     // Then loop
     const intv = setInterval(() => {
       Vibration.vibrate(1000);
@@ -20,7 +20,7 @@ const Saved = () => {
 
   const handleStop = () => {
     clearInterval(intervalId);
-    setIntervalId(null);
+    setIntervalId(0);
     Vibration.cancel(); // Good practice to stop active vibration
   };
 
