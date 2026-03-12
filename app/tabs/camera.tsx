@@ -1,267 +1,160 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  TouchableOpacity, 
-  Image, 
-  Alert, 
-  SafeAreaView, 
-  StatusBar 
-} from 'react-native';
-import { CameraView, CameraType, FlashMode, useCameraPermissions } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
-import * as Haptics from 'expo-haptics';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, SafeAreaView } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
+import { Ionicons } from '@expo/vector-icons';
+import { uploadPhotoToBackend } from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CameraScreen() {
-  const [facing, setFacing] = useState<CameraType>('back');
-  const [flash, setFlash] = useState<FlashMode>('off');
-  const [permission, requestPermission] = useCameraPermissions();
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions({
-    granularPermissions: ['photo'], // <--- Only ask for Photos
-    });
-  const [photo, setPhoto] = useState<any>(null); // Stores captured photo
-  const cameraRef = useRef<CameraView>(null);
+  const [photo, setPhoto] = useState<any>(null);
+  const [location, setLocation] = useState<any>(null);
+  const [uploading, setUploading] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>('');
 
-  // 1. Handle Permissions
+  // Get user email from AsyncStorage
   useEffect(() => {
-    if (!permission?.granted) requestPermission();
-    if (!mediaPermission?.granted) requestMediaPermission();
+    const getUserEmail = async () => {
+      try {
+        const email = await AsyncStorage.getItem('userEmail');
+        if (email) {
+          setUserEmail(email);
+          console.log(`[CAMERA] Loaded user email: ${email}`);
+        } else {
+          console.warn('[CAMERA] No email found in AsyncStorage');
+        }
+      } catch (e) {
+        console.error("[CAMERA] Error getting user email:", e);
+      }
+    };
+    getUserEmail();
   }, []);
 
-  if (!permission || !mediaPermission) {
-    // Camera permissions are still loading.
-    return <View />;
-  }
-
-  if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <TouchableOpacity onPress={requestPermission} style={styles.permissionBtn}>
-          <Text style={styles.permissionText}>Grant Permission</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  // 2. Camera Actions
-  const toggleCameraFacing = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  };
-
-  const toggleFlash = () => {
-    setFlash(current => (current === 'off' ? 'on' : 'off'));
-  };
-
+  // Open system camera
   const takePicture = async () => {
-    if (cameraRef.current) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Physical shutter feel
-      try {
-        const photoData = await cameraRef.current.takePictureAsync({
-          quality: 1,
-          base64: false,
-          exif: true,
-        });
-        setPhoto(photoData); // Switch to preview mode
-      } catch (error) {
-        console.log(error);
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert("Permission Required", "We need camera access to take photos.");
+      return;
+    }
+
+    try {
+      let result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        quality: 0.7,
+        cameraType: ImagePicker.CameraType.back,
+      });
+
+      if (!result.canceled) {
+        const photoData = result.assets[0];
+        setPhoto(photoData);
+        fetchLocation();
       }
+    } catch (e) {
+      Alert.alert("Error", "Failed to open camera");
     }
   };
 
-  // 3. Preview & Save Actions
+  // Open gallery picker
+  const pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.7,
+      });
+
+      if (!result.canceled) {
+        const photoData = result.assets[0];
+        setPhoto(photoData);
+        fetchLocation();
+      }
+    } catch (e) {
+      Alert.alert("Error", "Failed to open gallery");
+    }
+  };
+
+  const fetchLocation = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setLocation(null);
+        return;
+      }
+
+      let loc = await Location.getCurrentPositionAsync({});
+      let address = await Location.reverseGeocodeAsync({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude
+      });
+      setLocation({ coords: loc.coords, address: address[0] });
+    } catch (e) {
+      console.log("Error fetching location:", e);
+      setLocation(null);
+    }
+  };
+
+  // Upload to MongoDB
   const savePhoto = async () => {
-    if (photo) {
-      try {
-        await MediaLibrary.createAssetAsync(photo.uri);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert("Saved!", "Photo saved to your gallery.");
-        setPhoto(null); // Reset to camera
-      } catch (e) {
-        Alert.alert("Error", "Could not save photo."+String(e));
-      }
+    if (!photo) return;
+    
+    try {
+      setUploading(true);
+      
+      const locationData = location || { error: "Location not found" };
+      
+      // Upload directly to backend (MongoDB) with user email
+      const result = await uploadPhotoToBackend(photo.uri, locationData, userEmail);
+      
+      Alert.alert("Success", "Photo uploaded! It's now in processing queue.");
+      setPhoto(null);
+      setLocation(null);
+    } catch (e) {
+      Alert.alert("Error", `Failed to upload photo: ${e}`);
+    } finally {
+      setUploading(false);
     }
   };
 
-  const retakePhoto = () => {
-    setPhoto(null);
-  };
-
-  // ---------------- Render: Photo Preview Mode ----------------
   if (photo) {
     return (
       <SafeAreaView style={styles.container}>
-        <Image source={{ uri: photo.uri }} style={styles.previewImage} />
-        <View style={styles.previewControls}>
-          <TouchableOpacity onPress={retakePhoto} style={[styles.controlBtn, styles.retakeBtn]}>
-            <Ionicons name="trash-outline" size={28} color="white" />
-            <Text style={styles.controlText}>Retake</Text>
+        <Image source={{ uri: photo.uri }} style={styles.preview} />
+        <View style={styles.controls}>
+          <TouchableOpacity onPress={() => setPhoto(null)} style={styles.btn} disabled={uploading}>
+            <Text>Discard</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity onPress={savePhoto} style={[styles.controlBtn, styles.saveBtn]}>
-            <Ionicons name="checkmark-circle" size={28} color="black" />
-            <Text style={[styles.controlText, { color: 'black' }]}>Save</Text>
+          <TouchableOpacity onPress={savePhoto} style={styles.btn} disabled={uploading}>
+            <Text>{uploading ? "Uploading..." : "Keep & Process"}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
   }
 
-  // ---------------- Render: Camera View Mode ----------------
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <CameraView 
-        style={styles.camera} 
-        facing={facing} 
-        flash={flash} 
-        ref={cameraRef}
-      >
-        {/* Top Controls (Flash, Settings) */}
-        <SafeAreaView style={styles.topControls}>
-          <TouchableOpacity onPress={toggleFlash} style={styles.iconButton}>
-            <Ionicons 
-              name={flash === 'on' ? "flash" : "flash-off"} 
-              size={28} 
-              color={flash === 'on' ? "#FFD700" : "white"} 
-            />
-          </TouchableOpacity>
-        </SafeAreaView>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.largeBtn} onPress={takePicture}>
+          <Ionicons name="camera" size={40} color="#fff" />
+          <Text style={styles.btnText}>Take Photo</Text>
+        </TouchableOpacity>
 
-        {/* Bottom Controls (Shutter, Flip) */}
-        <View style={styles.bottomControls}>
-          {/* Gallery / Placeholder */}
-          <TouchableOpacity style={styles.miniBtn}>
-            <View style={styles.galleryPlaceholder} />
-          </TouchableOpacity>
-
-          {/* Shutter Button */}
-          <TouchableOpacity onPress={takePicture} style={styles.shutterContainer}>
-            <View style={styles.shutterOuter}>
-              <View style={styles.shutterInner} />
-            </View>
-          </TouchableOpacity>
-
-          {/* Flip Camera */}
-          <TouchableOpacity onPress={toggleCameraFacing} style={styles.miniBtn}>
-            <MaterialIcons name="flip-camera-ios" size={32} color="white" />
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+        <TouchableOpacity style={styles.largeBtn} onPress={pickImage}>
+          <Ionicons name="images" size={40} color="#fff" />
+          <Text style={styles.btnText}>Choose from Gallery</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',
-  },
-  camera: {
-    flex: 1,
-    width: '100%',
-  },
-  // Top Controls
-  topControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    backgroundColor: 'rgba(0,0,0,0.2)', // Slight gradient feel
-  },
-  iconButton: {
-    padding: 10,
-  },
-  // Bottom Controls
-  bottomControls: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 150,
-    paddingBottom: 40,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-  },
-  // Shutter Button Styles
-  shutterContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  shutterOuter: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 4,
-    borderColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  shutterInner: {
-    width: 65,
-    height: 65,
-    borderRadius: 35,
-    backgroundColor: 'white',
-  },
-  miniBtn: {
-    width: 50,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  galleryPlaceholder: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#333',
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'white',
-  },
-  // Permission Styles
-  permissionBtn: {
-    backgroundColor: '#007AFF',
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  permissionText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  // Preview Mode Styles
-  previewImage: {
-    flex: 1,
-    resizeMode: 'contain',
-  },
-  previewControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    backgroundColor: 'black',
-  },
-  controlBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
-    width: '45%',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  retakeBtn: {
-    backgroundColor: '#333',
-  },
-  saveBtn: {
-    backgroundColor: 'white',
-  },
-  controlText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'white',
-  },
+  container: { flex: 1, backgroundColor: '#f5f5f5', justifyContent: 'center', alignItems: 'center' },
+  buttonContainer: { gap: 20, paddingHorizontal: 20 },
+  largeBtn: { backgroundColor: '#007AFF', paddingVertical: 20, paddingHorizontal: 30, borderRadius: 12, alignItems: 'center', flexDirection: 'row', gap: 15 },
+  btnText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  preview: { flex: 1 },
+  controls: { flexDirection: 'row', justifyContent: 'space-around', padding: 20, backgroundColor: 'black' },
+  btn: { padding: 12, backgroundColor: 'white', borderRadius: 8, minWidth: 100, alignItems: 'center' }
 });

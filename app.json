@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "usesCleartextTraffic": true,
       
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -32,7 +33,7 @@
         "react-native-auth0",
         {
           "domain": "dev-rxrx468576ec84ic.us.auth0.com",
-          "customScheme": "auth0sample"
+          "customScheme": "com.anonymous.appstart.auth0"
         }
       ],
       "expo-router",
@@ -68,7 +69,9 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {},
+      "router": {
+        "ignorepatterns": ["services/"]
+      },
       "eas": {
         "projectId": "0707ff89-34f7-4ead-923b-a4fd73981baa"
       }
