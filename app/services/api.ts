@@ -162,6 +162,7 @@ export const fetchUserPhotos = async (userEmail: string, userId: string) => {
     console.log(`[API] Fetching photos for user: ${userEmail} (id: ${userId})`);
     const ur =  getLocalIP();
     const BACKEND_URL = ur;
+    console.log(BACKEND_URL)
 
     // Fetch all processed photos
     const response = await fetch(`${BACKEND_URL}/photos?status=done`);
