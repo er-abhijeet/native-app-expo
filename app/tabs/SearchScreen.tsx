@@ -208,7 +208,7 @@ export default function SearchScreen() {
           <Ionicons name="search-outline" size={20} color="gray" style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder="Search scenery, items, feelings..."
+            placeholderTextColor="#666"
             value={textQuery}
             onChangeText={setTextQuery}
             onSubmitEditing={handleSearch}
@@ -221,7 +221,7 @@ export default function SearchScreen() {
             <Ionicons name="location-outline" size={20} color="gray" style={styles.icon} />
             <TextInput
               style={styles.input}
-              placeholder="Start typing a location..."
+              placeholderTextColor="#666"
               value={locationQuery}
               onChangeText={(text) => {
                 setLocationQuery(text);
@@ -249,7 +249,7 @@ export default function SearchScreen() {
                     style={styles.suggestionItem}
                     onPress={() => handleSelectLocation(item)}
                   >
-                    <Ionicons name="pin" size={16} color="#007AFF" style={styles.suggestionIcon} />
+                    <Ionicons name="pin" size={16} color="#818cf8" style={styles.suggestionIcon} />
                     <Text style={styles.suggestionText} numberOfLines={2}>
                       {item.formatted}
                     </Text>
@@ -314,7 +314,7 @@ export default function SearchScreen() {
                   <View style={styles.infoHeader}>
                     <Text style={styles.infoTitle}>Match Details</Text>
                     <TouchableOpacity onPress={() => setShowInfo(false)}>
-                      <Ionicons name="close" size={24} color="black" />
+                      <Ionicons name="close" size={24} color="#fff" />
                     </TouchableOpacity>
                   </View>
                   <ScrollView>
@@ -342,86 +342,93 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", paddingTop: 40 },
-  header: { fontSize: 24, fontWeight: "bold", marginLeft: 20, marginBottom: 10 },
-  searchForm: { paddingHorizontal: 20, paddingBottom: 10, zIndex: 10 }, // zIndex needed for dropdown
+  container: { flex: 1, backgroundColor: "#0f0f13", paddingTop: 40 },
+  header: { fontSize: 24, fontWeight: "bold", color: "#fff", marginLeft: 20, marginBottom: 15 },
+  searchForm: { paddingHorizontal: 20, paddingBottom: 10, zIndex: 10 },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f2f2f2",
-    borderRadius: 10,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    height: 50,
+    backgroundColor: "#1c1c24",
+    borderRadius: 12,
+    marginBottom: 12,
+    paddingHorizontal: 15,
+    height: 52,
+    borderWidth: 1,
+    borderColor: "#2a2a35",
   },
   icon: { marginRight: 10 },
   rightIcon: { marginLeft: 10 },
-  input: { flex: 1, fontSize: 16 },
+  input: { flex: 1, fontSize: 16, color: "#fff" },
   
   // Autocomplete Specific Styles
   autocompleteContainer: {
     position: 'relative',
-    zIndex: 100, // Elevate above everything else
+    zIndex: 100, 
   },
   dropdown: {
     position: 'absolute',
-    top: 55, // Push just below the input field
+    top: 55, 
     left: 0,
     right: 0,
-    backgroundColor: 'white',
-    borderRadius: 8,
+    backgroundColor: '#1c1c24',
+    borderRadius: 12,
     maxHeight: 200,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#2a2a35',
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
     elevation: 5,
     zIndex: 100,
   },
   suggestionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    padding: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#2a2a35',
   },
   suggestionIcon: {
-    marginRight: 10,
+    marginRight: 12,
   },
   suggestionText: {
-    fontSize: 14,
+    fontSize: 15,
     flex: 1,
-    color: '#333',
+    color: '#ddd',
   },
 
   searchButton: {
-    backgroundColor: "#007AFF",
-    height: 50,
-    borderRadius: 10,
+    backgroundColor: "#4f46e5",
+    height: 52,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 5,
+    marginTop: 8,
     zIndex: 1,
+    shadowColor: "#4f46e5",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
   searchButtonText: { color: "white", fontSize: 16, fontWeight: "bold" },
   listContainer: { paddingHorizontal: 2, paddingBottom: 20 },
   itemContainer: { flex: 1, margin: 2, aspectRatio: 1, maxWidth: width / 3 },
-  thumbnail: { width: "100%", height: "100%", borderRadius: 5 },
+  thumbnail: { width: "100%", height: "100%", borderRadius: 8, backgroundColor: '#1c1c24' },
   badge: {
     position: "absolute",
     bottom: 5,
     right: 5,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(79, 70, 229, 0.9)",
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 10,
+    borderRadius: 6,
   },
   badgeText: { color: "white", fontSize: 10, fontWeight: "bold" },
   
   // Modal Styles
-  modalContainer: { flex: 1, backgroundColor: "black" },
+  modalContainer: { flex: 1, backgroundColor: "rgba(0,0,0,0.95)" },
   fullImage: { flex: 1, width: "100%", height: "100%" },
   topBar: {
     position: "absolute",
@@ -433,21 +440,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     zIndex: 10,
   },
-  iconBtn: { padding: 10, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 20 },
+  iconBtn: { padding: 10, backgroundColor: "rgba(28,28,36,0.6)", borderRadius: 20 },
   infoSheet: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
+    backgroundColor: "#1c1c24",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
     maxHeight: "50%",
     zIndex: 20,
+    borderTopWidth: 1,
+    borderColor: "#2a2a35",
   },
-  infoHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 15 },
-  infoTitle: { fontSize: 18, fontWeight: "bold" },
-  infoLabel: { fontSize: 14, fontWeight: "bold", color: "#555", marginTop: 10 },
-  infoValue: { fontSize: 16, color: "#000", marginBottom: 5 },
+  infoHeader: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20, alignItems: 'center' },
+  infoTitle: { fontSize: 20, fontWeight: "bold", color: "#fff" },
+  infoLabel: { fontSize: 14, fontWeight: "600", color: "#818cf8", marginTop: 12 },
+  infoValue: { fontSize: 16, color: "#ddd", marginBottom: 4 },
 });

@@ -452,7 +452,7 @@ export default function GalleryScreen() {
                     <Ionicons
                       name="information-circle-outline"
                       size={24}
-                      color="black"
+                      color="#fff"
                     />
                     <Text style={styles.optionText}>Image Info</Text>
                   </TouchableOpacity>
@@ -473,7 +473,7 @@ export default function GalleryScreen() {
                       setShowInfo(false);
                     }}
                   >
-                    <Ionicons name="scan-outline" size={24} color="black" />
+                    <Ionicons name="scan-outline" size={24} color="#fff" />
                     <Text style={styles.optionText}>Show Faces</Text>
                   </TouchableOpacity>
                 </View>
@@ -498,7 +498,7 @@ export default function GalleryScreen() {
                   <View style={styles.infoHeader}>
                     <Text style={styles.infoTitle}>Image Details</Text>
                     <TouchableOpacity onPress={() => setShowInfo(false)}>
-                      <Ionicons name="close" size={24} color="black" />
+                      <Ionicons name="close" size={24} color="#fff" />
                     </TouchableOpacity>
                   </View>
                   <ScrollView>
@@ -562,34 +562,35 @@ export default function GalleryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 50, backgroundColor: "#fff" },
-  header: { fontSize: 24, fontWeight: "bold", padding: 15 },
+  container: { flex: 1, paddingTop: 50, backgroundColor: "#0f0f13" },
+  header: { fontSize: 24, fontWeight: "bold", padding: 15, color: "#fff" },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyText: { fontSize: 16, color: "#999", textAlign: "center" },
+  emptyText: { fontSize: 16, color: "#888", textAlign: "center" },
 
   // Grid Styles
   itemContainer: { width: width / 3, height: width / 3, padding: 1 },
   thumbnail: {
     width: "100%",
     height: "100%",
-    backgroundColor: "#eee",
+    backgroundColor: "#1c1c24",
     resizeMode: "cover",
   },
   badge: {
     position: "absolute",
     bottom: 5,
     right: 5,
-    backgroundColor: "blue",
-    padding: 2,
-    borderRadius: 4,
+    backgroundColor: "rgba(79, 70, 229, 0.9)",
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 6,
   },
-  badgeText: { color: "white", fontSize: 10 },
+  badgeText: { color: "white", fontSize: 10, fontWeight: "600" },
 
   // Modal Styles
   modalContainer: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "rgba(0,0,0,0.95)",
     justifyContent: "center",
   },
   fullImage: { width: "100%", height: "100%" },
@@ -604,7 +605,7 @@ const styles = StyleSheet.create({
   },
   iconBtn: {
     padding: 10,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(28,28,36,0.6)",
     borderRadius: 20,
   },
 
@@ -613,14 +614,16 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 100,
     right: 20,
-    backgroundColor: "white",
-    borderRadius: 8,
-    padding: 5,
+    backgroundColor: "#1c1c24",
+    borderRadius: 12,
+    padding: 8,
     elevation: 5,
-    width: 150,
+    width: 160,
+    borderWidth: 1,
+    borderColor: "#2a2a35",
   },
   optionItem: { flexDirection: "row", alignItems: "center", padding: 10 },
-  optionText: { marginLeft: 10, fontSize: 16 },
+  optionText: { marginLeft: 10, fontSize: 16, color: "#fff" },
 
   // Info Sheet
   infoSheet: {
@@ -628,20 +631,23 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: height * 0.4,
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
+    height: height * 0.45,
+    backgroundColor: "#1c1c24",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    borderTopWidth: 1,
+    borderColor: "#2a2a35",
   },
   infoHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 15,
+    marginBottom: 20,
+    alignItems: "center",
   },
-  infoTitle: { fontSize: 18, fontWeight: "bold" },
-  infoLabel: { fontWeight: "bold", marginTop: 10, color: "#555" },
-  infoValue: { marginTop: 2, color: "#000" },
+  infoTitle: { fontSize: 20, fontWeight: "bold", color: "#fff" },
+  infoLabel: { fontWeight: "600", marginTop: 12, color: "#818cf8", fontSize: 14 },
+  infoValue: { marginTop: 4, color: "#ddd", fontSize: 16 },
   // BBox Rendering Styles
   fullImageContainer: {
     flex: 1,
@@ -652,19 +658,19 @@ const styles = StyleSheet.create({
   boundingBox: {
     position: "absolute",
     borderWidth: 2,
-    borderColor: "#00FF00", // Highly visible lime green used in CV tools
-    backgroundColor: "rgba(0, 255, 0, 0.1)", // Slight tint to highlight the face
+    borderColor: "#34d399", 
+    backgroundColor: "rgba(52, 211, 153, 0.15)", 
   },
   bboxLabel: {
     position: "absolute",
-    top: -20, // Places the label just above the top-left corner
+    top: -24, 
     left: -2,
-    backgroundColor: "#00FF00",
-    paddingHorizontal: 4,
+    backgroundColor: "#34d399",
+    paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 2,
+    borderRadius: 4,
   },
-  bboxLabelText: { color: "black", fontSize: 10, fontWeight: "bold" },
+  bboxLabelText: { color: "#0f0f13", fontSize: 12, fontWeight: "bold" },
 
   // BBox Exit Button Styles
   bboxExitContainer: {
@@ -676,9 +682,9 @@ const styles = StyleSheet.create({
   bboxExitBtn: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FF3B30",
+    backgroundColor: "rgba(244, 63, 94, 0.9)",
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 25,
     elevation: 5,
   },

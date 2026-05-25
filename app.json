@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "camera-app",
-    "slug": "camera-app",
+    "slug": "app-start",
     "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

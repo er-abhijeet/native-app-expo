@@ -1,17 +1,15 @@
 import { StyleSheet, Text, View, Image, Pressable, Vibration } from "react-native";
 import React, { useEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 const Saved = () => {
-  const [intervalId, setIntervalId] = useState(0);
+  const [intervalId, setIntervalId] = useState<any>(null);
   const [counter, setCounter] = useState(1);
-  const [show, setShow] = useState("hellow");
-  const [imageUrl, setImageUrl] = useState("hellow");
+  const [show, setShow] = useState("Loading...");
+  const [imageUrl, setImageUrl] = useState("https://picsum.photos/400");
 
   const handleVibrate = () => {
-    // Vibrate immediately
-    // Vibration.vibrate(1000);
-    if(intervalId)return;
-    // Then loop
+    if (intervalId) return;
     const intv = setInterval(() => {
       Vibration.vibrate(1000);
     }, 1000);
@@ -19,20 +17,24 @@ const Saved = () => {
   };
 
   const handleStop = () => {
-    clearInterval(intervalId);
-    setIntervalId(0);
-    Vibration.cancel(); // Good practice to stop active vibration
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
+    Vibration.cancel();
   };
 
   useEffect(() => {
     const loadData = async () => {
       try {
+        setShow("Loading...");
         const res = await fetch("https://dog.ceo/api/breeds/image/random");
         const data = await res.json();
         setShow(data.status);
         setImageUrl(data.message);
       } catch (e) {
         console.log(e);
+        setShow("Error");
       }
     };
     loadData();
@@ -40,38 +42,43 @@ const Saved = () => {
 
   return (
     <View style={styles.container}>
-      <Text>saved</Text>
-      <Text>{counter}</Text>
-      <Text>{show}</Text>
+      <Text style={styles.headerTitle}>Saved Inspiration</Text>
       
-      <Image
-        source={{
-          uri: imageUrl || "https://picsum.photos/200",
-        }}
-        style={styles.image}
-      />
+      <View style={styles.card}>
+        <Image
+          source={{
+            uri: imageUrl,
+          }}
+          style={styles.image}
+        />
+        <View style={styles.infoRow}>
+          <Text style={styles.infoText}>Status: <Text style={styles.highlight}>{show}</Text></Text>
+          <Text style={styles.infoText}>Item: <Text style={styles.highlight}>#{counter}</Text></Text>
+        </View>
+      </View>
 
       <View style={styles.buttonContainer}>
-        {/* Vibrate Button */}
-<Pressable 
-  // 👇 KEY FIX: Use an array to combine styles
-  style={[styles.buttonBase, styles.blueButton]} 
-  onPress={handleVibrate}
->
-  <Text style={styles.textBase}>Vibrate</Text>
-</Pressable>
+        <Pressable 
+          style={[styles.buttonBase, styles.blueButton]} 
+          onPress={handleVibrate}
+        >
+          <Ionicons name="radio-outline" size={20} color="white" />
+          <Text style={styles.textBase}>Vibrate</Text>
+        </Pressable>
 
-<Pressable 
-  style={[styles.buttonBase, styles.redButton]} 
-  onPress={handleStop}
->
-  <Text style={styles.textBase}>Stop</Text>
-</Pressable>
+        <Pressable 
+          style={[styles.buttonBase, styles.redButton]} 
+          onPress={handleStop}
+        >
+          <Ionicons name="stop-circle-outline" size={20} color="white" />
+          <Text style={styles.textBase}>Stop</Text>
+        </Pressable>
 
-<Pressable
+        <Pressable
           onPress={() => setCounter(counter + 1)}
           style={[styles.buttonBase, styles.greenButton]} 
         >
+          <Ionicons name="play-skip-forward-outline" size={20} color="white" />
           <Text style={styles.textBase}>Next</Text>
         </Pressable>
       </View>
@@ -84,56 +91,81 @@ export default Saved;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#0f0f13",
+    paddingTop: 60,
+    paddingHorizontal: 20,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 20,
+    alignSelf: "flex-start",
+  },
+  card: {
+    backgroundColor: "#1c1c24",
+    borderRadius: 20,
+    padding: 16,
+    width: "100%",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#2a2a35",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
+    marginBottom: 30,
   },
   image: {
-    width: 200,
-    height: 200,
-    margin: 12,
-    borderRadius: 10, // Optional: makes image look nicer
+    width: "100%",
+    height: 250,
+    borderRadius: 16,
+    marginBottom: 16,
+    backgroundColor: "#2a2a35",
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingHorizontal: 10,
+  },
+  infoText: {
+    color: "#888",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  highlight: {
+    color: "#818cf8",
+    fontWeight: "bold",
   },
   buttonContainer: {
-    // ❌ gap: "14px" (Causes crash or ignored style on native)
-    // ✅ gap: 14 (Correct)
-    gap: 14, 
-    flexDirection: "row", // Changed to row to match your original flex-row intent? Or keep column if you prefer vertical stack.
-    padding: 16,
+    gap: 16, 
+    flexDirection: "column",
+    width: "100%",
   },
-  // Shared styles for all buttons
   buttonBase: {
-    paddingVertical: 12,    // Adds height
-    paddingHorizontal: 20,  // Adds width
-    borderRadius: 8,        // Rounded corners
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 5,      // Space between buttons
+    flexDirection: 'row',
+    gap: 10,
   },
-  
-  // 2. The "Colors" (Specific to each button)
   blueButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#4f46e5',
   },
   redButton: {
-    backgroundColor: '#ef4444', 
+    backgroundColor: '#e11d48', 
   },
   greenButton: {
-    backgroundColor: '#22c55e', 
+    backgroundColor: '#10b981', 
   },
-
-  // 3. The Text
   textBase: {
-    color: 'white',        // Text color
-    fontSize: 16,
-    fontWeight: "600",
-    // ❌ REMOVE backgroundColor: 'red' from here, 
-    // otherwise it covers the button color!
-  },
-  // Text styling
-  buttonText: {
-    backgroundColor:"red",
-    color: 'black',
-    fontSize: 16,
+    color: 'white',
+    fontSize: 18,
     fontWeight: "600",
   },
 });

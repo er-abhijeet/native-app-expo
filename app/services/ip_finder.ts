@@ -2,7 +2,7 @@ import * as Network from "expo-network";
 
  function getLocalIP(): string | null {
   return "https://gallery.snorlax.codes"
-  return "http://192.168.0.103:5000";
+  return "http://192.168.0.103:5069";
   return "http://abhijeet.taild80e14.ts.net";
   return "https://empirical-required-vid-accordingly.trycloudflare.com"
   // try {

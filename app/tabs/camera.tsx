@@ -122,10 +122,10 @@ export default function CameraScreen() {
         <Image source={{ uri: photo.uri }} style={styles.preview} />
         <View style={styles.controls}>
           <TouchableOpacity onPress={() => setPhoto(null)} style={styles.btn} disabled={uploading}>
-            <Text>Discard</Text>
+            <Text style={styles.btnTextDiscard}>Discard</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={savePhoto} style={styles.btn} disabled={uploading}>
-            <Text>{uploading ? "Uploading..." : "Keep & Process"}</Text>
+            <Text style={styles.btnTextKeep}>{uploading ? "Uploading..." : "Keep & Process"}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -136,12 +136,12 @@ export default function CameraScreen() {
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.largeBtn} onPress={takePicture}>
-          <Ionicons name="camera" size={40} color="#fff" />
+          <Ionicons name="camera" size={40} color="#818cf8" />
           <Text style={styles.btnText}>Take Photo</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.largeBtn} onPress={pickImage}>
-          <Ionicons name="images" size={40} color="#fff" />
+          <Ionicons name="images" size={40} color="#818cf8" />
           <Text style={styles.btnText}>Choose from Gallery</Text>
         </TouchableOpacity>
       </View>
@@ -150,11 +150,51 @@ export default function CameraScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', justifyContent: 'center', alignItems: 'center' },
-  buttonContainer: { gap: 20, paddingHorizontal: 20 },
-  largeBtn: { backgroundColor: '#007AFF', paddingVertical: 20, paddingHorizontal: 30, borderRadius: 12, alignItems: 'center', flexDirection: 'row', gap: 15 },
-  btnText: { color: '#fff', fontSize: 18, fontWeight: '600' },
-  preview: { flex: 1 },
-  controls: { flexDirection: 'row', justifyContent: 'space-around', padding: 20, backgroundColor: 'black' },
-  btn: { padding: 12, backgroundColor: 'white', borderRadius: 8, minWidth: 100, alignItems: 'center' }
+  container: { flex: 1, backgroundColor: '#0f0f13', justifyContent: 'center', alignItems: 'center' },
+  buttonContainer: { gap: 24, paddingHorizontal: 20, width: '100%' },
+  largeBtn: { 
+    backgroundColor: '#1c1c24', 
+    paddingVertical: 20, 
+    paddingHorizontal: 30, 
+    borderRadius: 16, 
+    alignItems: 'center', 
+    flexDirection: 'row', 
+    gap: 15,
+    borderWidth: 1,
+    borderColor: '#2a2a35',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  btnText: { color: '#818cf8', fontSize: 18, fontWeight: '600' },
+  preview: { flex: 1, width: '100%' },
+  controls: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-around', 
+    padding: 24, 
+    backgroundColor: '#0f0f13',
+    width: '100%',
+  },
+  btn: { 
+    paddingVertical: 14,
+    paddingHorizontal: 24, 
+    backgroundColor: '#1c1c24', 
+    borderRadius: 12, 
+    minWidth: 120, 
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2a2a35',
+  },
+  btnTextDiscard: {
+    color: '#f43f5e',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  btnTextKeep: {
+    color: '#34d399',
+    fontWeight: '600',
+    fontSize: 16,
+  }
 });

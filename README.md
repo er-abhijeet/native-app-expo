@@ -1,50 +1,45 @@
-# Welcome to your Expo app 👋
+# AI Photo Gallery - Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This repository contains the mobile application frontend for the AI Photo Gallery system. Built with React Native and Expo, it serves as the primary user interface for capturing, uploading, and viewing photos with advanced AI-driven auto-sharing features.
 
-## Get started
+## 📱 Features
 
-1. Install dependencies
+- **Auth0 Integration:** Secure user authentication and registration.
+- **Camera & Gallery Access:** Seamlessly capture new photos or upload existing ones from the device media library.
+- **AI Auto-Sharing:** Uploaded photos are sent to the backend where AI detects faces. If your face is recognized in someone else's photo, it automatically appears in your shared queue!
+- **Modern UI:** Styled using NativeWind (Tailwind CSS for React Native) for a clean, responsive, and intuitive user experience.
 
+## 🛠️ Tech Stack
+
+- **Framework:** React Native & Expo
+- **Routing:** Expo Router
+- **Styling:** NativeWind (Tailwind CSS)
+- **Authentication:** React Native Auth0
+- **Storage/State:** AsyncStorage
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js
+- npm or yarn
+- Expo CLI
+- Expo Go app on your physical device (or an iOS Simulator / Android Emulator)
+
+### Installation
+
+1. Clone this repository.
+2. Install dependencies:
    ```bash
    npm install
    ```
-
-2. Start the app
-
+3. Set up environment variables for Auth0 and your backend API endpoint.
+4. Start the development server:
    ```bash
-   npx expo start
+   npm start
    ```
+5. Scan the QR code with the Expo Go app on your phone, or press `i` for iOS simulator or `a` for Android emulator.
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🧩 How it connects to the system
+This is **1 of 3** repositories in the AI Photo Gallery ecosystem. 
+- It acts as the client, sending images to the **Backend Server** for processing.
+- The **Web Portal** provides an alternative view, mapping out where photos were taken.
